@@ -188,7 +188,9 @@ final class Whirlpool : MerkleDamgard
              * compute and apply K^0 to the cipher state:
              */
             ulong K[8] = hash[]; 			/* the round key */
-            ulong state[8] = block[] ^ K[];	/* the cipher state */
+            ulong state[8];
+            state[] = block[] ^ K[];	/* the cipher state */
+            //above should just be ulong[8] state = block[] ^ K[]; but dmd bug #14850
 
             /*
              * iterate over all rounds:

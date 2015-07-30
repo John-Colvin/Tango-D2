@@ -292,17 +292,15 @@ class ZipSubFolder : VfsFolder, VfsSync
 {
     ///
     @property final const(char)[] name()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return entry.name;
     }
 
     ///
     final override string toString()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return entry.fullname.idup;
     }
 
@@ -310,11 +308,11 @@ class ZipSubFolder : VfsFolder, VfsSync
     @property final VfsFile file(const(char)[] path)
     in
     {
-        assert( valid );
         assert( !Path.parse(path).isAbsolute );
     }
     body
     {
+        assert( valid );
         auto fp = Path.parse(path);
         auto dir = fp.path;
         auto name = fp.file;
@@ -352,11 +350,11 @@ class ZipSubFolder : VfsFolder, VfsSync
     @property final VfsFolderEntry folder(const(char)[] path)
     in
     {
-        assert( valid );
         assert( !Path.parse(path).isAbsolute );
     }
     body
     {
+        assert( valid );
         // Locate the folder in question.  We do this by "walking" the
         // path components.  If we find a component that doesn't exist,
         // then we create a ZipSubFolderEntry for the remainder.
@@ -394,25 +392,22 @@ class ZipSubFolder : VfsFolder, VfsSync
 
     ///
     @property final VfsFolders self()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return new ZipSubFolderGroup(archive, this, false);
     }
 
     ///
     @property final VfsFolders tree()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return new ZipSubFolderGroup(archive, this, true);
     }
 
     ///
     final int opApply(scope int delegate(ref VfsFolder) dg)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         int result = 0;
 
         foreach( _,childEntry ; this.entry.dir.children )
@@ -430,9 +425,8 @@ class ZipSubFolder : VfsFolder, VfsSync
 
     ///
     final VfsFolder clear()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("VfsFolder.clear");
@@ -452,9 +446,8 @@ else
 
     ///
     @property final bool writable()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return !archive.readonly;
     }
 
@@ -463,9 +456,8 @@ else
      * sync'ed before being closed.
      */
     VfsFolder close(bool commit = true)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         // MUTATE
         if( commit ) sync();
 
@@ -490,9 +482,8 @@ else
 
     ///
     final void verify(VfsFolder folder, bool mounting)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         auto zipfolder = cast(ZipSubFolder) folder;
 
         if( mounting
@@ -546,26 +537,23 @@ private:
     }
 
     final void enforce_mutable()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( archive.readonly )
             // TODO: exception
             throw new Exception("cannot mutate a read-only Zip archive");
     }
 
     final void mutate()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         enforce_mutable();
         archive.modified = true;
     }
 
     final ZipSubFolder[] folders(bool collect)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         ZipSubFolder[] folders;
         stats = stats.init;
 
@@ -588,9 +576,8 @@ private:
     }
 
     final Entry*[] files(ref VfsStats stats, VfsFilter filter = null)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         Entry*[] files;
 
         foreach( _,childEntry ; entry.dir.children )
@@ -670,7 +657,6 @@ class ZipFolder : ZipSubFolder
     final override VfsFolder sync()
     out
     {
-        assert( valid );
         assert( !modified );
     }
     body
@@ -966,27 +952,24 @@ class ZipFile : VfsFile
 {
     ///
     @property final const(char)[] name()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( entry ) return entry.name;
         else        return name_;
     }
 
     ///
     final override string toString()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( entry ) return entry.fullname.idup;
         else        return (parent.fullname ~ "/" ~ name_).idup;
     }
 
     ///
     @property final bool exists()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         // If we've only got a parent and a name, this means we don't actually
         // exist; EXISTENTIAL CRISIS TEIM!!!
         return !!entry;
@@ -994,9 +977,8 @@ class ZipFile : VfsFile
 
     ///
     @property final ulong size()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( exists )
             return entry.fileSize;
         else
@@ -1008,9 +990,8 @@ class ZipFile : VfsFile
 
     ///
     final VfsFile copy(VfsFile source)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("ZipFile.copy");
@@ -1030,9 +1011,8 @@ else
 
     ///
     final VfsFile move(VfsFile source)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("ZipFile.move");
@@ -1052,10 +1032,10 @@ else
 
     ///
     final VfsFile create()
-    in { assert( valid ); }
     out { assert( valid ); }
     body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("ZipFile.create");
@@ -1088,9 +1068,8 @@ else
 
     ///
     final VfsFile create(InputStream stream)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("ZipFile.create");
@@ -1106,10 +1085,10 @@ else
 
     ///
     final VfsFile remove()
-    in{ assert( valid ); }
     out { assert( valid ); }
     body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         mutate_error("ZipFile.remove");
@@ -1144,9 +1123,8 @@ else
 
     ///
     @property final InputStream input()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( exists )
             return entry.openInput();
 
@@ -1159,9 +1137,8 @@ else
 
     ///
     @property final OutputStream output()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutable )
 {
         mutate_error("ZipFile.output");
@@ -1180,9 +1157,8 @@ else
 
     ///
     @property final VfsFile dup()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( entry )
             return new ZipFile(archive, parent, entry);
         else
@@ -1245,18 +1221,16 @@ else
     }
 
     final void enforce_mutable()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( archive.readonly )
             // TODO: exception
             throw new Exception("cannot mutate a read-only Zip archive");
     }
 
     final void mutate()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         enforce_mutable();
         archive.modified = true;
     }
@@ -1299,10 +1273,10 @@ else
     }
 
     final void close()
-    in { assert( valid ); }
     out { assert( !valid ); }
     body
     {
+        assert( valid );
         archive = null;
         parent = null;
         entry = null;
@@ -1316,9 +1290,8 @@ else
 class ZipSubFolderEntry : VfsFolderEntry
 {
     final VfsFolder open()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         auto entry = (name in parent.dir.children);
         if( entry )
             return new ZipSubFolder(archive, *entry);
@@ -1335,9 +1308,8 @@ class ZipSubFolderEntry : VfsFolderEntry
     }
 
     final VfsFolder create()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
 version( ZipFolder_NonMutating )
 {
         // TODO: different exception if folder exists (this operation is
@@ -1372,9 +1344,8 @@ else
     }
 
     @property final bool exists()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return !!(name in parent.dir.children);
     }
 
@@ -1405,18 +1376,16 @@ private:
     }
 
     final void enforce_mutable()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         if( archive.readonly )
             // TODO: exception
             throw new Exception("cannot mutate a read-only Zip archive");
     }
 
     final void mutate()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         enforce_mutable();
         archive.modified = true;
     }
@@ -1428,9 +1397,8 @@ private:
 class ZipSubFolderGroup : VfsFolders
 {
     final int opApply(scope int delegate(ref VfsFolder) dg)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         int result = 0;
 
         foreach( folder ; members )
@@ -1444,9 +1412,8 @@ class ZipSubFolderGroup : VfsFolders
     }
 
     @property final size_t files()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         uint files = 0;
 
         foreach( folder ; members )
@@ -1456,23 +1423,20 @@ class ZipSubFolderGroup : VfsFolders
     }
 
     @property final size_t folders()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return members.length;
     }
 
     @property final size_t entries()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return files + folders;
     }
 
     @property final ulong bytes()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         ulong bytes = 0;
 
         foreach( folder ; members )
@@ -1482,9 +1446,8 @@ class ZipSubFolderGroup : VfsFolders
     }
 
     final VfsFolders subset(const(char)[] pattern)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         ZipSubFolder[] set;
 
         foreach( folder ; members )
@@ -1495,9 +1458,8 @@ class ZipSubFolderGroup : VfsFolders
     }
 
     @property final VfsFiles catalog(const(char)[] pattern)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         bool filter (VfsInfo info)
         {
                 return Path.patternMatch(info.name, pattern);
@@ -1507,9 +1469,8 @@ class ZipSubFolderGroup : VfsFolders
     }
 
     @property final VfsFiles catalog(VfsFilter filter = null)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return new ZipFileGroup(archive, this, filter);
     }
 
@@ -1539,9 +1500,8 @@ private:
     }
 
     final ZipSubFolder[] scan(ZipSubFolder root, bool recurse)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         auto folders = root.folders(recurse);
 
         if( recurse )
@@ -1558,9 +1518,8 @@ private:
 class ZipFileGroup : VfsFiles
 {
     final int opApply(scope int delegate(ref VfsFile) dg)
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         int result = 0;
         auto file = new ZipFile;
 
@@ -1576,16 +1535,14 @@ class ZipFileGroup : VfsFiles
     }
 
     @property final size_t files()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return group.length;
     }
 
     @property final ulong bytes()
-    in { assert( valid ); }
-    body
     {
+        assert( valid );
         return stats.bytes;
     }
 

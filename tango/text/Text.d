@@ -1693,7 +1693,7 @@ class TextView(T) : UniText
 
 class UniText
 {
-        abstract const char[]  toString  (char[]  dst = null);
+        abstract const char[] toString  (char[]  dst);
 
         abstract const wchar[] toString16 (wchar[] dst = null);
 
